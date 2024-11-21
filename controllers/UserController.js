@@ -1,5 +1,7 @@
-const { User, Order } = require("../models/index")//importar modelo
+const { User, Order, Token } = require("../models/index")//importar modelo
 const bcrypt = require ('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { jwt_secret } = require('../config/config.json')['development']
 
 const UserController = {
     async create(req, res) {
@@ -42,9 +44,28 @@ const UserController = {
           return res.status(400).send({message: "Incorrect email or password"})
       }
 
+      const token = jwt.sign({ id: user.id }, jwt_secret);
+      Token.create({ token, UserId: user.id });
+
       res.send({message:"Successfully logged",user})
 
     },
+    async logout(req, res) {
+      try {
+          await Token.destroy({
+              where: {
+                  [Op.and]: [
+                      { UserId: req.user.id },
+                      { token: req.headers.authorization }
+                  ]
+              }
+          });
+          res.send({ message: 'Desconected successfully' })
+      } catch (error) {
+          console.log(error)
+          res.status(500).send({ message: 'ERROR trying to connect' })
+      }
+    }
 };
 
 module.exports = UserController;
