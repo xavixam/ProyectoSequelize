@@ -2,17 +2,18 @@ const { Product, Category, Sequelize, Cat_Prod } = require("../models/index");
 const {Op} = Sequelize
 
 const ProductController = {
-    async create(req, res) {
+    async create(req, res, next) {
         try {
             const product = await Product.create(req.body);
             product.addCategory(req.body.CategoryId) //inserto en la tabla intermedia genreBooks
             res.status(201).send({ message: "Product created", product });
         } catch (error) {
             console.error(error);
+            next(error)
             res.status(500).send({ message: "There was a problem", error });
         }
     },
-    async getAll(req, res) {
+    async getAll(req, res, next) {
         try {
             const products = await Product.findAll({
                 include:{
@@ -25,10 +26,11 @@ const ProductController = {
             res.status(200).send(products);
         } catch (error) {
             console.error(error);
+            next(error)
             res.status(500).send({ message: "There was a problem", error });
         }
     },
-    async getOrdered(req, res) {
+    async getOrdered(req, res, next) {
         try {
             const products = await Product.findAll({
                 order: [
@@ -38,10 +40,11 @@ const ProductController = {
             res.status(200).send(products);
         } catch (error) {
             console.error(error);
+            next(error)
             res.status(500).send({ message: "There was a problem", error });
         }
     },
-    async delete(req, res) {
+    async delete(req, res, next) {
         try {
             await Product.destroy({
                 where: {
@@ -56,6 +59,7 @@ const ProductController = {
             res.send({ message: `Product with id ${req.params.id} deleted` });
         } catch (error) {
             console.error(error);
+            next(error)
             res.status(500).send({ message: "There was a problem", error });
         }
     },
@@ -72,16 +76,17 @@ const ProductController = {
             res.status(500).send({ message: "There was a problem", error });
         }
     },
-    async getById(req, res) {
+    async getById(req, res, next) {
         try {
             const products = await Product.findByPk(req.params.id);
             res.status(200).send(products)
         } catch (error) {
             console.error(error);
+            next(error)
             res.status(500).send({ message: "ERROR", error })
         }
     },
-    async getByName(req, res) {
+    async getByName(req, res, next) {
         try {
             const products = await Product.findOne({
                 where: {
@@ -91,6 +96,7 @@ const ProductController = {
             res.status(200).send(products)
         } catch (error) {
             console.error(error);
+            next(error)
             res.status(500).send({ message: "ERROR", error })
         }
     }

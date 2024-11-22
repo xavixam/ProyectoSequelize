@@ -1,17 +1,18 @@
 const { Category, Product, Cat_Prod } = require("../models/index"); //importar modelo
 
 const CategoryController = {
-    async create(req, res) {
+    async create(req, res, next) {
         try {
             const category = await Category.create(req.body);
             category.addProduct(req.body.ProductId) //inserto en la tabla intermedia genreBooks
             res.status(201).send({ message: "Category created", category });
         } catch (error) {
             console.error(error);
+            next(error)
             res.status(500).send({ message: "There was a problem", error });
         }
     },
-    async getAll(req, res) {
+    async getAll(req, res, next) {
         try {
             const categories = await Category.findAll({
                 include: {
@@ -23,10 +24,11 @@ const CategoryController = {
             res.status(200).send(categories);
         } catch (error) {
             console.error(error);
+            next(error)
             res.status(500).send({ message: "There was a problem", error });
         }
     },
-    async delete(req, res) {
+    async delete(req, res, next) {
         try {
             await Category.destroy({
                 where: {
@@ -41,6 +43,7 @@ const CategoryController = {
             res.send({ message: `Category with id ${req.params.id} deleted` });
         } catch (error) {
             console.error(error);
+            next(error)
             res.status(500).send({ message: "There was a problem", error });
         }
     },
@@ -57,16 +60,17 @@ const CategoryController = {
             res.status(500).send({ message: "There was a problem", error });
         }
     },
-    async getById(req, res) {
+    async getById(req, res, next) {
         try {
             const categories = await Category.findByPk(req.params.id);
             res.status(200).send(categories)
         } catch (error) {
             console.error(error);
+            next(error)
             res.status(500).send({ message: "ERROR", error })
         }
     },
-    async getByName(req, res) {
+    async getByName(req, res, next) {
         try {
             const categories = await Category.findOne({
                 where: {
@@ -76,6 +80,7 @@ const CategoryController = {
             res.status(200).send(categories)
         } catch (error) {
             console.error(error);
+            next(error)
             res.status(500).send({ message: "ERROR", error })
         }
     }

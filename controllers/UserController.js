@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const { jwt_secret } = require('../config/config.json')['development']
 
 const UserController = {
-    async create(req, res) {
+    async create(req, res, next) {
         try {
           // console.log(req.body)
           req.body.password = await bcrypt.hash(req.body.password, 10);
@@ -12,10 +12,11 @@ const UserController = {
           res.status(201).send({ message: "Usuario creado", user });
         } catch (error) {
           console.error(error);
+          next(error)
           res.status(500).send({ message: "There was a problem", error });
         }
     },
-    async getAll(req, res) {
+    async getAll(req, res, next) {
         try {
             const users = await User.findAll({
                 include:[Order]
@@ -23,6 +24,7 @@ const UserController = {
             res.status(200).send(users)
         } catch (error) {
             console.error(error);
+            next(error)
             res.status(500).send({ message: "ERROR", error })
         }
     },
@@ -50,7 +52,7 @@ const UserController = {
       res.send({message:"Successfully logged",user})
 
     },
-    async logout(req, res) {
+    async logout(req, res, next) {
       try {
           await Token.destroy({
               where: {
@@ -63,10 +65,11 @@ const UserController = {
           res.send({ message: 'Desconected successfully' })
       } catch (error) {
           console.log(error)
+          next(error)
           res.status(500).send({ message: 'ERROR trying to connect' })
       }
     },
-    async getUserInfo(req, res) {
+    async getUserInfo(req, res, next) {
       try {
           const products = await User.findByPk(req.user.id, {
             include: {
@@ -81,6 +84,7 @@ const UserController = {
           res.status(200).send(products)
       } catch (error) {
           console.error(error);
+          next(error)
           res.status(500).send({ message: "ERROR", error })
       }
   },
