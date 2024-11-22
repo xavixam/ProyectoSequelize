@@ -1,10 +1,10 @@
-const { Category, Product } = require("../models/index"); //importar modelo
+const { Category, Product, Cat_Prod } = require("../models/index"); //importar modelo
 
 const CategoryController = {
     async create(req, res) {
         try {
-            // console.log(req.body)
             const category = await Category.create(req.body);
+            category.addProduct(req.body.ProductId) //inserto en la tabla intermedia genreBooks
             res.status(201).send({ message: "Category created", category });
         } catch (error) {
             console.error(error);
@@ -14,10 +14,10 @@ const CategoryController = {
     async getAll(req, res) {
         try {
             const categories = await Category.findAll({
-                // include:[Post]
                 include: {
                   model: Product,
                   attributes: ["name", "price"],
+                  through: { attributes: [] }
                 },
               });
             res.status(200).send(categories);
@@ -28,12 +28,16 @@ const CategoryController = {
     },
     async delete(req, res) {
         try {
-            //eliminar el usuario
             await Category.destroy({
                 where: {
                     id: req.params.id,
                 },
-            });
+            })
+            await Cat_Prod.destroy({
+                where: {
+                    ProductId: req.params.id
+                }
+            })
             res.send({ message: `Category with id ${req.params.id} deleted` });
         } catch (error) {
             console.error(error);

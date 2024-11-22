@@ -1,11 +1,11 @@
-const { Product, Category, Sequelize } = require("../models/index");
+const { Product, Category, Sequelize, Cat_Prod } = require("../models/index");
 const {Op} = Sequelize
 
 const ProductController = {
     async create(req, res) {
         try {
-            // console.log(req.body)
             const product = await Product.create(req.body);
+            product.addCategory(req.body.CategoryId) //inserto en la tabla intermedia genreBooks
             res.status(201).send({ message: "Product created", product });
         } catch (error) {
             console.error(error);
@@ -14,7 +14,14 @@ const ProductController = {
     },
     async getAll(req, res) {
         try {
-            const products = await Product.findAll();
+            const products = await Product.findAll({
+                include:{
+                    model:Category,//modelo que esta relacionado
+                    attributes: ["name"],//atributos del modelo que quiero mostrar
+                    through: { attributes: [] }//para que no se muestren los atributos de la tabla intermedia
+                }
+            } 
+        );
             res.status(200).send(products);
         } catch (error) {
             console.error(error);
@@ -36,12 +43,16 @@ const ProductController = {
     },
     async delete(req, res) {
         try {
-            //eliminar el usuario
             await Product.destroy({
                 where: {
                     id: req.params.id,
                 },
-            });
+            })
+            await Cat_Prod.destroy({
+                where: {
+                    CategoryId: req.params.id
+                }
+            })
             res.send({ message: `Product with id ${req.params.id} deleted` });
         } catch (error) {
             console.error(error);
