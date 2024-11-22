@@ -1,4 +1,4 @@
-const { User, Order, Token } = require("../models/index")//importar modelo
+const { User, Order, Token, Product } = require("../models/index")//importar modelo
 const bcrypt = require ('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { jwt_secret } = require('../config/config.json')['development']
@@ -65,7 +65,25 @@ const UserController = {
           console.log(error)
           res.status(500).send({ message: 'ERROR trying to connect' })
       }
-    }
+    },
+    async getUserInfo(req, res) {
+      try {
+          const products = await User.findByPk(req.user.id, {
+            include: {
+              model: Order,
+              include: {
+                model: Product,//modelo que esta relacionado
+                attributes: ["name"],//atributos del modelo que quiero mostrar
+                through: { attributes: [] }//para que no se muestren los atributos de la tabla intermedia
+              },
+            }
+          });
+          res.status(200).send(products)
+      } catch (error) {
+          console.error(error);
+          res.status(500).send({ message: "ERROR", error })
+      }
+  },
 };
 
 module.exports = UserController;

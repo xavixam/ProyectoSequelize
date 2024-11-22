@@ -3,7 +3,7 @@ const ProductController = require("../controllers/ProductController")
 const router = express.Router()
 const {authentication} = require('../middleware/authentication')
 
-router.post("/create", authentication, ProductController.create)
+router.post("/create",  ProductController.create)
 router.get("/getAll",ProductController.getAll)
 router.get("/getOrdered",ProductController.getOrdered)
 router.get("/id/:id",ProductController.getById)
