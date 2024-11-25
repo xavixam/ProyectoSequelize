@@ -1,5 +1,5 @@
 # Proyecto Sequelize
-Este proyecto es un programa que interactúa con una base de datos para interactuar con sus campos.
+Este proyecto es un programa de una tienda para interactuar con sus productos, categorías, pedidos y usuarios.
 
 ## Tecnologías que he utilizado 🛠️
 
