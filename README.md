@@ -32,4 +32,4 @@ npm run dev
 ```
 
 ---
-Hecho por Xavier Antúnez 😊
+Hecho por [Xavier Antúnez](https://github.com/xavixam) 😊
